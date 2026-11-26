@@ -273,5 +273,17 @@ setInterval(check,30000);
 document.addEventListener('visibilitychange',function(){if(!document.hidden){render();check()}});
 render();check();
 </script>
+(function(){
+ var o=openSheet,d0=drawSheet,pv=prev;
+ openSheet=function(){o();N=0;drawSheet()};
+ drawSheet=function(){d0();var l=document.querySelectorAll('#panel label');
+  if(l[0])l[0].textContent='Tambah berapa halaman dari halaman terakhir?';
+  if(l[1])l[1].textContent='Atau ketik langsung sampai halaman (terakhir: '+getPos()+')';
+  var n=$('#nn');if(n&&!N)n.value=''};
+ prev=function(msg){pv(msg||(N?undefined:'Tambahkan dari halaman terakhir (hal. '+getPos()+')'))};
+ $('#fab').onclick=openSheet;
+ $('#sheet').addEventListener('click',function(e){if(e.target.id==='mi'){e.stopPropagation();N=Math.max(0,N-1);$('#nn').value=N||'';$('#ep').value=endOf(N);prev()}},true);
+})();
+</script>
 </body>
 </html>
