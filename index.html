@@ -286,5 +286,33 @@ render();check();
  $('#sheet').addEventListener('click',function(e){if(e.target.id==='mi'){e.stopPropagation();N=Math.max(0,N-1);$('#nn').value=N||'';$('#ep').value=endOf(N);prev()}},true);
 })();
 </script>
+ <script>
+(function(){
+ function H(s){var h=5381,i;for(i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return ''+h}
+ function K(){try{return localStorage.getItem('tt_h')}catch(e){return null}}
+ function W(v){try{localStorage.setItem('tt_h',v)}catch(e){}}
+ function G(){try{return sessionStorage.getItem('tt_r')}catch(e){return '1'}}
+ function ask(){return fetch('index.html',{cache:'no-store'}).then(function(r){return r.text()}).then(H)}
+ function banner(h){
+  if(document.getElementById('upd'))return;
+  var d=document.createElement('div');d.id='upd';
+  d.style.cssText='position:fixed;left:12px;right:12px;top:calc(12px + env(safe-area-inset-top,0px));z-index:50;background:#0e2f2b;color:#fff;border:1px solid #e2b04a;border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px;font:14px system-ui,sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.35)';
+  d.innerHTML='<span style="flex:1">Versi baru tersedia</span><button style="border:0;border-radius:10px;padding:8px 14px;font:inherit;font-weight:700;background:#e2b04a;color:#2a1d00">Perbarui</button>';
+  d.querySelector('button').onclick=function(){W(h);location.reload()};
+  document.body.appendChild(d);
+ }
+ function chk(auto){
+  ask().then(function(h){
+   var k=K();
+   if(!k){W(h);return}
+   if(k===h)return;
+   if(auto&&!G()){try{sessionStorage.setItem('tt_r','1')}catch(e){}W(h);location.reload();return}
+   banner(h);
+  }).catch(function(){});
+ }
+ chk(true);
+ document.addEventListener('visibilitychange',function(){if(!document.hidden)chk(false)});
+})();
+ </script>
 </body>
 </html>
