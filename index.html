@@ -314,5 +314,58 @@ render();check();
  document.addEventListener('visibilitychange',function(){if(!document.hidden)chk(false)});
 })();
  </script>
+<script>
+(function(){
+ var r1=render;
+ function kf(){var k=S.kf=S.kf||{done:{}};k.done=k.done||{};if(k.on2===undefined){k.on2=!!k.on;k.t2=k.time||'08:00';k.tk='18:00'}k.on=false;return k}
+ function mm(t){var a=(t||'0:0').split(':');return (+a[0])*60+(+a[1])}
+ function nowm(){var n=new Date();return n.getHours()*60+n.getMinutes()}
+ function tgt(){var n=new Date(),d=n.getDay();if(d===5)return today();if(d===4){n.setDate(n.getDate()+1);return ymd(n)}return null}
+ function win(){var k=kf(),d=new Date().getDay();return k.on2&&(d===5||(d===4&&nowm()>=mm(k.tk)))}
+ function slot(){var k=kf();if(!k.on2)return null;var d=new Date().getDay(),t=tgt();if(!t||k.done[t])return null;if(d===4&&nowm()>=mm(k.tk))return 'k';if(d===5&&nowm()>=mm(k.t2))return 'j';return null}
+ notify=function(t,b,force){
+  if(!('Notification' in window)){if(force)toast('Notifikasi tidak didukung di sini');return}
+  if(Notification.permission==='default'){try{Notification.requestPermission().then(function(){render()})}catch(e){}return}
+  if(Notification.permission!=='granted'){if(force)toast('Izin notifikasi ditolak di pengaturan browser');return}
+  try{
+   if(navigator.serviceWorker&&navigator.serviceWorker.ready){navigator.serviceWorker.ready.then(function(r){return r.showNotification(t,{body:b,tag:t})}).then(function(){if(force)toast('Notifikasi dikirim')}).catch(function(){if(force)toast('Notifikasi gagal dikirim')})}
+   else{new Notification(t,{body:b});if(force)toast('Notifikasi dikirim')}
+  }catch(e){if(force)toast('Notifikasi tidak bisa dikirim')}
+ };
+ render=function(){
+  kf();r1();
+  var a=$('#app'),k=kf(),o=a.querySelector('#kdone'),t=tgt();
+  if(o&&o.closest('.card'))o.closest('.card').remove();
+  o=a.querySelector('#kon');if(o&&o.closest('.card'))o.closest('.card').remove();
+  if(tab==='home'&&win()){
+   var dn=k.done[t],h=document.createElement('div'),st=a.querySelector('.wrap > .card.status');
+   h.className='card status';
+   h.innerHTML='<span class="dot'+(dn?' ok':'')+'"></span><p style="flex:1"><strong>Surat Al-Kahfi</strong>'+(dn?'Alhamdulillah, sudah dibaca ✓':(new Date().getDay()===4?'Malam Jumat: sunnah membaca Al-Kahfi':'Jumat: sunnah membaca Al-Kahfi'))+'</p><button class="pill" id="kd2" style="border:0;color:inherit">'+(dn?'Batal':'Tandai dibaca')+'</button>';
+   if(st)st.after(h);
+  }
+  if(tab==='set'){
+   var c=document.createElement('div'),f=a.querySelector('.wrap > .card');
+   c.className='card';
+   c.innerHTML='<div class="sw"><b>Pengingat Al-Kahfi</b><input type="checkbox" id="kon2" '+(k.on2?'checked':'')+'></div><label>Mulai Kamis malam (sesudah Maghrib)</label><input type="time" id="kk2" value="'+k.tk+'"><label>Pengingat lagi Jumat pagi</label><input type="time" id="kj2" value="'+k.t2+'"><p class="hint">Atur jam Kamis malam sesudah Maghrib di kotamu. Pengingat ini terpisah dari pengingat tadarus harian dan berhenti setelah kamu menandai sudah dibaca.</p>';
+   if(f)f.after(c);
+  }
+ };
+ $('#app').addEventListener('click',function(e){
+  if(e.target.id==='kd2'){var k=kf(),t=tgt();if(!t)return;if(k.done[t]){delete k.done[t];toast('Tanda dibatalkan')}else{k.done[t]=1;toast('Alhamdulillah, Al-Kahfi tercatat 🤲')}save();render()}
+ });
+ $('#app').addEventListener('change',function(e){
+  var id=e.target.id,k=kf();
+  if(id==='kon2'){k.on2=e.target.checked;if(k.on2&&'Notification' in window&&Notification.permission==='default'){try{Notification.requestPermission().then(function(){render()})}catch(x){}}}
+  else if(id==='kk2')k.tk=e.target.value||'18:00';
+  else if(id==='kj2')k.t2=e.target.value||'08:00';
+  else return;
+  save();render()
+ });
+ function chkK(){var k=kf(),s=slot();if(!s)return;var key=tgt()+s;if(k.ln2===key)return;k.ln2=key;save();notify(s==='k'?'Malam Jumat: Al-Kahfi 📖':'Jumat: Al-Kahfi 📖','Jangan lupa membaca Surat Al-Kahfi.')}
+ setInterval(chkK,30000);
+ document.addEventListener('visibilitychange',function(){if(!document.hidden)chkK()});
+ render();chkK();
+})();
+</script>
 </body>
 </html>
